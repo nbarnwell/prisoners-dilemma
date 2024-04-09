@@ -6,7 +6,7 @@ public static class StrategyTypeProvider
 {
     public static IEnumerable<Type> GetStrategyTypes()
     {
-       return
+        return
             Assembly.GetExecutingAssembly()
                     .GetTypes()
                     .Where(x => x is { IsAbstract: false, IsClass: true })

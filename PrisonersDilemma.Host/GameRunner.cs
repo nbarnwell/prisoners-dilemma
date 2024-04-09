@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace PrisonersDilemma.Runner;
 
@@ -20,12 +19,12 @@ public class GameRunner
         var strategyTypes = StrategyTypeProvider.GetStrategyTypes();
 
         var pairs = strategyTypes.SelectMany(
-                                     x => strategyTypes,
+                                     _ => strategyTypes,
                                      (player, opponent) => new { Player = player, Opponent = opponent })
                                  .Select(x => new
                                  {
-                                     Player = (IStrategy)_services.GetService(x.Player),
-                                     Opponent = (IStrategy)_services.GetService(x.Opponent)
+                                     Player   = (IStrategy)_services.GetService(x.Player)!,
+                                     Opponent = (IStrategy)_services.GetService(x.Opponent)!
                                  });
 
         foreach (var pair in pairs)
@@ -49,35 +48,6 @@ public class GameRunner
             opponentPreviousDecision = opponentDecision;
 
             _logger.LogInformation($"{player.GetType().Name} vs. {opponent.GetType().Name} {score.PlayerScore}/{score.OpponentScore}");
-        }
-    }
-}
-
-internal class Score
-{
-    public readonly int PlayerScore;
-    public readonly int OpponentScore;
-
-    public Score(int playerScore, int opponentScore)
-    {
-        PlayerScore        = playerScore;
-        OpponentScore = opponentScore;
-    }
-
-    public static Score From(Decision playerDecision, Decision opponentDecision)
-    {
-        switch (playerDecision)
-        {
-            case Decision.Cooperate when opponentDecision == Decision.Cooperate:
-                return new Score(3, 3);
-            case Decision.Cooperate when opponentDecision == Decision.Defect:
-                return new Score(5, 0);
-            case Decision.Defect when opponentDecision == Decision.Cooperate:
-                return new Score(0, 5);
-            case Decision.Defect when opponentDecision == Decision.Defect:
-                return new Score(1, 1);
-            default:
-                throw new ArgumentOutOfRangeException(nameof(playerDecision), playerDecision, null);
         }
     }
 }
