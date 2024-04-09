@@ -1,9 +1,9 @@
 ﻿namespace PrisonersDilemma.Runner;
 
-public class Nice : IStrategy
+public class Nasty : IStrategy
 {
     public Task<Decision> Decide(Decision? previousOpponentDecision)
     {
-        return Task.FromResult(Decision.Cooperate);
+        return Task.FromResult(Decision.Defect);
     }
 }
