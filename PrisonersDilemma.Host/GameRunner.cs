@@ -18,25 +18,34 @@ public class GameRunner
         var scoreboard = new ScoreBoard();
 
         // Get all combinations of all strategies and play each against each other 200 times
-        var strategyTypes = StrategyTypeProvider.GetStrategyTypes();
+        var strategyTypes = StrategyTypeProvider.GetStrategyTypes().ToArray();
 
-        var pairs = strategyTypes.SelectMany(
-                                     _ => strategyTypes,
-                                     (player, opponent) => new { PlayerType = player, OpponentType = opponent })
-                                 .Select(x => new
-                                 {
-                                     Player   = _strategyFactory.Create(x.PlayerType),
-                                     Opponent = _strategyFactory.Create(x.OpponentType)
-                                 });
+        var pairs = new List<Tuple<IStrategy, IStrategy>>();
+
+        for (int i = 0; i < strategyTypes.Length; i++)
+        {
+            pairs.Add(
+                Tuple.Create(
+                    _strategyFactory.Create(strategyTypes[i]),
+                    _strategyFactory.Create(strategyTypes[i])));
+
+            for (int j = i + 1; j < strategyTypes.Length; j++)
+            {
+                pairs.Add(
+                    Tuple.Create(
+                        _strategyFactory.Create(strategyTypes[i]),
+                        _strategyFactory.Create(strategyTypes[j])));
+            }
+        }
 
         foreach (var pair in pairs)
         {
-            var scores = await Play(pair.Player, pair.Opponent);
+            var scores = await Play(pair.Item1, pair.Item2);
 
             foreach (var score in scores)
             {
-                scoreboard.Add(pair.Player, score.PlayerScore);
-                scoreboard.Add(pair.Opponent, score.OpponentScore);
+                scoreboard.Add(pair.Item1, score.PlayerScore);
+                scoreboard.Add(pair.Item2, score.OpponentScore);
             }
         }
 
