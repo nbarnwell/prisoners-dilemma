@@ -6,4 +6,9 @@ public class Nice : IStrategy
     {
         return Task.FromResult(Decision.Cooperate);
     }
+
+    public string GetName()
+    {
+        return GetType().Name;
+    }
 }

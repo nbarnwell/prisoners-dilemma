@@ -4,39 +4,52 @@ namespace PrisonersDilemma.Runner;
 
 public class GameRunner
 {
-    private readonly IServiceProvider _services;
+    private readonly IStrategyFactory _strategyFactory;
     private readonly ILogger<GameRunner> _logger;
 
-    public GameRunner(IServiceProvider services, ILogger<GameRunner> logger)
+    public GameRunner(IStrategyFactory strategyFactory, ILogger<GameRunner> logger)
     {
-        _services = services ?? throw new ArgumentNullException(nameof(services));
-        _logger   = logger   ?? throw new ArgumentNullException(nameof(logger));
+        _strategyFactory = strategyFactory ?? throw new ArgumentNullException(nameof(strategyFactory));
+        _logger          = logger          ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task Run()
+    public async Task<ScoreBoard> Run()
     {
+        var scoreboard = new ScoreBoard();
+
         // Get all combinations of all strategies and play each against each other 200 times
         var strategyTypes = StrategyTypeProvider.GetStrategyTypes();
 
         var pairs = strategyTypes.SelectMany(
                                      _ => strategyTypes,
-                                     (player, opponent) => new { Player = player, Opponent = opponent })
+                                     (player, opponent) => new { PlayerType = player, OpponentType = opponent })
                                  .Select(x => new
                                  {
-                                     Player   = (IStrategy)_services.GetService(x.Player)!,
-                                     Opponent = (IStrategy)_services.GetService(x.Opponent)!
+                                     Player   = _strategyFactory.Create(x.PlayerType),
+                                     Opponent = _strategyFactory.Create(x.OpponentType)
                                  });
 
         foreach (var pair in pairs)
         {
-            await Play(pair.Player, pair.Opponent);
+            var scores = await Play(pair.Player, pair.Opponent);
+
+            foreach (var score in scores)
+            {
+                scoreboard.Add(pair.Player, score.PlayerScore);
+                scoreboard.Add(pair.Opponent, score.OpponentScore);
+            }
         }
+
+        return scoreboard;
     }
 
-    private async Task Play(IStrategy player, IStrategy opponent)
+    private async Task<IEnumerable<Score>> Play(IStrategy player, IStrategy opponent)
     {
         _logger.LogInformation($"Playing {player.GetType().Name} against {opponent.GetType().Name}...");
-        Decision? playerPreviousDecision = null;
+
+        var scores = new List<Score>();
+
+        Decision? playerPreviousDecision   = null;
         Decision? opponentPreviousDecision = null;
         for (int i = 0; i < 200; i++)
         {
@@ -48,6 +61,10 @@ public class GameRunner
             opponentPreviousDecision = opponentDecision;
 
             _logger.LogInformation($"{player.GetType().Name} vs. {opponent.GetType().Name} {score.PlayerScore}/{score.OpponentScore}");
+
+            scores.Add(score);
         }
+
+        return scores;
     }
 }

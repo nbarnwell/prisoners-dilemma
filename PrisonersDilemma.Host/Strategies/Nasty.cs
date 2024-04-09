@@ -6,4 +6,9 @@ public class Nasty : IStrategy
     {
         return Task.FromResult(Decision.Defect);
     }
+
+    public string GetName()
+    {
+        return GetType().Name;
+    }
 }
