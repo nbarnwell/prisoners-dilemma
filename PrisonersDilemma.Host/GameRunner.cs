@@ -37,14 +37,16 @@ public class GameRunner
     private async Task Play(IStrategy player, IStrategy opponent)
     {
         _logger.LogInformation($"Playing {player.GetType().Name} against {opponent.GetType().Name}...");
-        Decision? playerDecision = null;
-        Decision? opponentDecision = null;
+        Decision? playerPreviousDecision = null;
+        Decision? opponentPreviousDecision = null;
         for (int i = 0; i < 200; i++)
         {
-            playerDecision = await player.Decide(opponentDecision);
-            opponentDecision = await opponent.Decide(playerDecision);
+            var playerDecision = await player.Decide(opponentPreviousDecision);
+            var opponentDecision = await opponent.Decide(playerPreviousDecision);
 
-            var score = Score.From(playerDecision.Value, opponentDecision.Value);
+            var score = Score.From(playerDecision, opponentDecision);
+            playerPreviousDecision = playerDecision;
+            opponentPreviousDecision = opponentDecision;
 
             _logger.LogInformation($"{player.GetType().Name} vs. {opponent.GetType().Name} {score.PlayerScore}/{score.OpponentScore}");
         }
