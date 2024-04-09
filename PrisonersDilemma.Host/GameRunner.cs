@@ -17,11 +17,7 @@ public class GameRunner
     public async Task Run()
     {
         // Get all combinations of all strategies and play each against each other 200 times
-        var strategyTypes =
-            Assembly.GetExecutingAssembly()
-                    .GetTypes()
-                    .Where(x => x is { IsAbstract: false, IsClass: true })
-                    .Where(x => typeof(IStrategy).IsAssignableFrom(x));
+        var strategyTypes = StrategyTypeProvider.GetStrategyTypes();
 
         var pairs = strategyTypes.SelectMany(
                                      x => strategyTypes,

@@ -6,7 +6,11 @@ public static class StrategyInstaller
 {
     public static IServiceCollection AddStrategies(this IServiceCollection services)
     {
-        services.AddTransient<Nice>();
+        var strategies = StrategyTypeProvider.GetStrategyTypes();
+        foreach (var strategyType in strategies)
+        {
+            services.AddTransient(strategyType);
+        }
         return services;
     }
 
