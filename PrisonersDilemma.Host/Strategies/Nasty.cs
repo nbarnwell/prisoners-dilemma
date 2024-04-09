@@ -1,4 +1,4 @@
-﻿namespace PrisonersDilemma.Runner;
+﻿namespace PrisonersDilemma.Runner.Strategies;
 
 public class Nasty : IStrategy
 {
