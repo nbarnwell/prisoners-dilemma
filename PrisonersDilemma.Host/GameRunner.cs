@@ -47,7 +47,12 @@ public class GameRunner
             foreach (var score in scores)
             {
                 scoreboard.Add(pair.Item1, score.PlayerScore);
-                scoreboard.Add(pair.Item2, score.OpponentScore);
+
+                // Not sure about this, but it seems unfair to log both scores when it's playing itself, as it's getting an extra go
+                if (pair.Item1.GetType() != pair.Item2.GetType())
+                {
+                    scoreboard.Add(pair.Item2, score.OpponentScore);
+                }
             }
         }
 
