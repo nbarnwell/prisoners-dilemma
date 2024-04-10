@@ -8,13 +8,14 @@ namespace PrisonersDilemma.Tests
         [Test]
         public async Task GameRunner_runs_games()
         {
-            IStrategyFactory strategyFactory = new TestStrategyFactory();
+            var strategyTypeProvider = new TestStrategyTypeProvider();
+            var strategyFactory      = new TestStrategyFactory();
 
-            var sut = new GameRunner(strategyFactory, new Logger<GameRunner>(new LoggerFactory()));
+            var sut = new GameRunner(strategyTypeProvider, strategyFactory, new Logger<GameRunner>(new LoggerFactory()));
 
             var scoreboard = await sut.Run();
 
-            Assert.AreEqual(1200, scoreboard.GameCount);
+            Assert.AreEqual(200, scoreboard.GameCount);
         }
     }
 }

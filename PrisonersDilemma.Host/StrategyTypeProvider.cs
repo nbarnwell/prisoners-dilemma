@@ -2,9 +2,9 @@
 
 namespace PrisonersDilemma.Runner;
 
-public static class StrategyTypeProvider
+public class StrategyTypeProvider : IStrategyTypeProvider
 {
-    public static IEnumerable<Type> GetStrategyTypes()
+    public IEnumerable<Type> GetStrategyTypes()
     {
         return
             Assembly.GetExecutingAssembly()

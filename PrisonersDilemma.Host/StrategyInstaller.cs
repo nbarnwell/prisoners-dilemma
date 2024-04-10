@@ -6,7 +6,10 @@ public static class StrategyInstaller
 {
     public static IServiceCollection AddStrategies(this IServiceCollection services)
     {
-        var strategies = StrategyTypeProvider.GetStrategyTypes();
+        var strategyTypeProvider = new StrategyTypeProvider();
+        services.AddSingleton<IStrategyTypeProvider>(strategyTypeProvider);
+
+        var strategies = strategyTypeProvider.GetStrategyTypes();
         foreach (var strategyType in strategies)
         {
             services.AddTransient(strategyType);

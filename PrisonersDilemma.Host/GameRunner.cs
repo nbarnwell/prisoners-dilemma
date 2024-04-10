@@ -4,13 +4,15 @@ namespace PrisonersDilemma.Runner;
 
 public class GameRunner
 {
+    private readonly IStrategyTypeProvider _strategyTypeProvider;
     private readonly IStrategyFactory _strategyFactory;
     private readonly ILogger<GameRunner> _logger;
 
-    public GameRunner(IStrategyFactory strategyFactory, ILogger<GameRunner> logger)
+    public GameRunner(IStrategyTypeProvider strategyTypeProvider, IStrategyFactory strategyFactory, ILogger<GameRunner> logger)
     {
-        _strategyFactory = strategyFactory ?? throw new ArgumentNullException(nameof(strategyFactory));
-        _logger          = logger          ?? throw new ArgumentNullException(nameof(logger));
+        _strategyTypeProvider = strategyTypeProvider ?? throw new ArgumentNullException(nameof(strategyTypeProvider));
+        _strategyFactory      = strategyFactory      ?? throw new ArgumentNullException(nameof(strategyFactory));
+        _logger               = logger               ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<ScoreBoard> Run()
@@ -18,7 +20,7 @@ public class GameRunner
         var scoreboard = new ScoreBoard();
 
         // Get all combinations of all strategies and play each against each other 200 times
-        var strategyTypes = StrategyTypeProvider.GetStrategyTypes().ToArray();
+        var strategyTypes = _strategyTypeProvider.GetStrategyTypes().ToArray();
 
         var pairs = new List<Tuple<IStrategy, IStrategy>>();
 
