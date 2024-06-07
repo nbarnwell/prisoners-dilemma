@@ -15,4 +15,14 @@ public class ScoreBoard
         _scores[strategy.GetName()] += score;
         GameCount++;
     }
+
+    public IEnumerable<GameResult> GetResults()
+    {
+        foreach (var score in _scores)
+        {
+            yield return new GameResult(score.Key, score.Value);
+        }
+    }
 }
+
+public record GameResult(string StrategyName, int Score);

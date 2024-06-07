@@ -17,7 +17,26 @@ namespace PrisonersDilemma.Runner
 
             var runner = host.Services.GetService<GameRunner>();
 
-            await runner?.Run()!;
+            if (runner != null)
+            {
+                var scoreboard = await runner.Run();
+                PrintScoreboard(scoreboard);
+            }
+            else
+            {
+                throw new InvalidOperationException("No game runner available");
+            }
+        }
+
+        private static void PrintScoreboard(ScoreBoard scoreboard)
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Results:");
+
+            foreach (var result in scoreboard.GetResults().OrderByDescending(x => x.Score))
+            {
+                Console.WriteLine($"{result.StrategyName}: {result.Score}");
+            }
         }
     }
 }

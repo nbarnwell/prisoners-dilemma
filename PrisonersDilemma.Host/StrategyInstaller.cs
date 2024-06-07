@@ -8,6 +8,7 @@ public static class StrategyInstaller
     {
         var strategyTypeProvider = new StrategyTypeProvider();
         services.AddSingleton<IStrategyTypeProvider>(strategyTypeProvider);
+        services.AddSingleton<IStrategyFactory, ServiceProviderStrategyFactory>();
 
         var strategies = strategyTypeProvider.GetStrategyTypes();
         foreach (var strategyType in strategies)
